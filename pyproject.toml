@@ -1,0 +1,120 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mkdocs-get-deps"
+description = "MkDocs extension that lists all dependencies according to a mkdocs.yml file"
+readme = "README.md"
+license = "MIT"
+keywords = ["mkdocs"]
+authors = [
+    {name = "Oleh Prypin", email = "oleh@pryp.in"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Documentation",
+    "Typing :: Typed",
+]
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = [
+    "importlib-metadata >=4.3; python_version < '3.10'",
+    "mergedeep >=1.3.4",
+    "platformdirs >=2.2.0",
+    "PyYAML >=5.1",
+]
+
+[project.urls]
+Source = "https://github.com/mkdocs/get-deps"
+Issues = "https://github.com/mkdocs/get-deps/issues"
+History = "https://github.com/mkdocs/get-deps/releases"
+
+[project.scripts]
+mkdocs-get-deps = "mkdocs_get_deps.__main__:cli"
+
+[tool.hatch.version]
+path = "mkdocs_get_deps/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/mkdocs_get_deps", "/tests"]
+
+[tool.hatch.envs.default.scripts]
+all = [
+    "hatch run style:fix",
+    "hatch run types:check",
+    "hatch run test:test",
+]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest",
+]
+[tool.hatch.envs.test.scripts]
+test = [
+    "pytest -q",
+]
+
+[tool.hatch.envs.types]
+dependencies = [
+    "mypy",
+    "types-PyYAML",
+]
+[tool.hatch.envs.types.scripts]
+check = [
+    "mypy mkdocs_get_deps"
+]
+
+[tool.hatch.envs.style]
+skip-install = true
+dependencies = [
+    "ruff",
+]
+[tool.hatch.envs.style.scripts]
+fix = [
+    "ruff check --fix mkdocs_get_deps tests",
+    "format",
+]
+format = [
+    "ruff format -q mkdocs_get_deps tests",
+]
+
+[tool.ruff]
+line-length = 100
+select = [
+    "I",
+    "F", "W", "E", "UP", "YTT", "C4", "DTZ", "FA", "ISC", "PIE", "T20", "RSE", "TCH",
+    "B002", "B003", "B005", "B007", "B009", "B012", "B013", "B014", "B015", "B018", "B020", "B021", "B023", "B026", "B033", "B034", "B905",
+    "COM818",
+    "PERF101",
+    "PGH002", "PGH004", "PGH005",
+    "FLY002",
+    "PLC", "PLE", "PLR0124", "PLR0133", "PLR0206", "PLR0402", "PLR1701", "PLR1722", "PLW0120", "PLW0127", "PLW0129", "PLW0131", "PLW0406", "PLW0602", "PLW0603", "PLW0711",
+    "RUF001", "RUF005", "RUF007", "RUF010", "RUF013", "RUF100", "RUF200",
+    "SIM101", "SIM107", "SIM201", "SIM202", "SIM208", "SIM210", "SIM211", "SIM300", "SIM401", "SIM910",
+]
+ignore = ["E501", "E731"]
+[tool.ruff.flake8-comprehensions]
+allow-dict-calls-with-keyword-arguments = true
+
+[tool.mypy]
+warn_unreachable = true
+allow_redefinition = true
+
+[tool.pytest.ini_options]
+addopts = "--tb=native"
+enable_assertion_pass_hook = true
+filterwarnings = ["ignore::DeprecationWarning:.*:",
+                  "default::DeprecationWarning:mkdocs_get_deps.*:"]
+testpaths = ["tests"]
