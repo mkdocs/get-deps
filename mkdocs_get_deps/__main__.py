@@ -48,7 +48,7 @@ def cli():
     logging.getLogger("mkdocs").addHandler(warning_counter)
 
     with get_projects_file(args.projects_file) as projects_file:
-        deps = get_deps(projects_file, args.config_file)
+        deps = get_deps(config_file=args.config_file, projects_file=projects_file)
 
     for dep in deps:
         print(dep)  # noqa: T201

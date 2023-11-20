@@ -27,7 +27,7 @@ class TestGetDeps(unittest.TestCase):
             with open(mkdocs_yml, "w", encoding="utf-8") as f:
                 f.write(yml)
             with open(_projects_file_path, encoding="utf-8") as projects_file:
-                actual = get_deps(projects_file, mkdocs_yml)
+                actual = get_deps(config_file=mkdocs_yml, projects_file=projects_file)
         self.assertEqual(expected, actual)
 
     def test_empty_config(self):

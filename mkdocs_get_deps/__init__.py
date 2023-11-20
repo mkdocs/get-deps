@@ -88,15 +88,16 @@ def get_projects_file(path: str | None = None) -> BinaryIO:
 
 
 def get_deps(
-    projects_file: IO | None = None, config_file: IO | os.PathLike | str | None = None
+    config_file: IO | os.PathLike | str | None = None,
+    projects_file: IO | None = None,
 ) -> Collection[str]:
     """
     Print PyPI package dependencies inferred from a mkdocs.yml file based on a reverse mapping of known projects.
 
     Args:
-        projects_file: Buffer or local path of the registry file that declares all known MkDocs-related projects.
+        config_file: Non-default mkdocs.yml file - content as a buffer, or path.
+        projects_file: File/buffer that declares all known MkDocs-related projects.
             The file is in YAML format and contains `projects: [{mkdocs_theme:, mkdocs_plugin:, markdown_extension:}]
-        config_file: Non-default path to mkdocs.yml.
     """
     if config_file is None:
         if os.path.isfile("mkdocs.yml"):
