@@ -151,7 +151,7 @@ def get_deps(
     if projects_file is None:
         projects_file = get_projects_file()
     with projects_file:
-        projects = yaml.safe_load(projects_file)["projects"]
+        projects = yaml.load(projects_file, Loader=yaml_util.SafeLoader)["projects"]
 
     for project in projects:
         for kind, wanted in wanted_plugins:

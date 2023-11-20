@@ -8,10 +8,15 @@ from typing import IO, Any
 import mergedeep  # type: ignore
 import yaml
 
+try:
+    from yaml import CSafeLoader as SafeLoader
+except ImportError:
+    from yaml import SafeLoader  # type: ignore
+
 log = logging.getLogger(f"mkdocs.{__name__}")
 
 
-class YamlLoader(yaml.SafeLoader):
+class YamlLoader(SafeLoader):
     pass
 
 
