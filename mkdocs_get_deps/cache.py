@@ -26,7 +26,7 @@ def download_and_cache_url(
     cache_duration: datetime.timedelta,
     *,
     download: Callable[[str], bytes] = _download_url,
-    comment: str = "# ",
+    comment: bytes = b"# ",
 ) -> bytes:
     """Downloads a file from the URL, stores it under ~/.cache/, and returns its content.
 
@@ -43,7 +43,7 @@ def download_and_cache_url(
     path = os.path.join(directory, name_hash + os.path.splitext(url)[1])
 
     now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-    prefix = b"%s%s downloaded at timestamp " % (comment.encode(), url.encode())
+    prefix = b"%s%s downloaded at timestamp " % (comment, url.encode())
     # Check for cached file and try to return it
     if os.path.isfile(path):
         try:
