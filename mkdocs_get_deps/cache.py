@@ -4,6 +4,7 @@ import datetime
 import hashlib
 import logging
 import os
+import random
 import urllib.request
 from typing import Callable
 
@@ -61,8 +62,9 @@ def download_and_cache_url(
     log.debug(f"Downloading '{url}' to '{path}'")
     content = download(url)
     os.makedirs(directory, exist_ok=True)
-    with open(f"{path}.part", "wb") as f:
+    temp_filename = f"{path}.{random.randrange(1 << 32):08x}.part"
+    with open(temp_filename, "wb") as f:
         f.write(b"%s%d\n" % (prefix, now))
         f.write(content)
-    os.rename(f"{path}.part", path)
+    os.replace(temp_filename, path)
     return content
