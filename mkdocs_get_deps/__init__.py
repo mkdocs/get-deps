@@ -10,12 +10,7 @@ import logging
 import os
 import sys
 import urllib.parse
-from typing import IO, BinaryIO, Collection, Mapping, Sequence
-
-if sys.version_info >= (3, 10):
-    from importlib.metadata import EntryPoint, entry_points
-else:
-    from importlib_metadata import EntryPoint, entry_points
+from typing import IO, Any, BinaryIO, Collection, Mapping, Sequence
 
 import yaml
 
@@ -25,6 +20,14 @@ log = logging.getLogger(f"mkdocs.{__name__}")
 
 
 DEFAULT_PROJECTS_FILE = "https://raw.githubusercontent.com/mkdocs/catalog/main/projects.yaml"
+
+BUILTIN_THEMES = {"mkdocs", "readthedocs"}
+BUILTIN_PLUGINS = {"search"}
+_BUILTIN_EXTENSIONS = "abbr admonition attr_list codehilite def_list extra fenced_code footnotes md_in_html meta nl2br sane_lists smarty tables toc wikilinks legacy_attrs legacy_em".split()
+BUILTIN_EXTENSIONS = {
+    *_BUILTIN_EXTENSIONS,
+    *(f"markdown.extensions.{e}" for e in _BUILTIN_EXTENSIONS),
+}
 
 _NotFound = ()
 
@@ -60,8 +63,13 @@ def _strings(obj) -> Sequence[str]:
         return tuple(obj)
 
 
-@functools.lru_cache
-def _entry_points(group: str) -> Mapping[str, EntryPoint]:
+@functools.lru_cache(maxsize=None)
+def _entry_points(group: str) -> Mapping[str, Any]:
+    if sys.version_info >= (3, 10):
+        from importlib.metadata import entry_points
+    else:
+        from importlib_metadata import entry_points
+
     eps = {ep.name: ep for ep in entry_points(group=group)}
     log.debug(f"Available '{group}' entry points: {sorted(eps)}")
     return eps
@@ -141,9 +149,9 @@ def get_deps(
     extensions = set(_strings(_dig(cfg, "markdown_extensions")))
 
     wanted_plugins = (
-        (_PluginKind("mkdocs_theme", "mkdocs.themes"), themes - {"mkdocs", "readthedocs"}),
-        (_PluginKind("mkdocs_plugin", "mkdocs.plugins"), plugins - {"search"}),
-        (_PluginKind("markdown_extension", "markdown.extensions"), extensions),
+        (_PluginKind("mkdocs_theme", "mkdocs.themes"), themes - BUILTIN_THEMES),
+        (_PluginKind("mkdocs_plugin", "mkdocs.plugins"), plugins - BUILTIN_PLUGINS),
+        (_PluginKind("markdown_extension", "markdown.extensions"), extensions - BUILTIN_EXTENSIONS),
     )
     for kind, wanted in wanted_plugins:
         log.debug(f"Wanted {kind}s: {sorted(wanted)}")
@@ -189,14 +197,15 @@ def get_deps(
             ep = _entry_points(kind.entry_points_key).get(entry_name)
             if ep is not None and ep.dist is not None:
                 dist_name = ep.dist.name
-            if dist_name not in ("mkdocs", "Markdown"):
-                warning = f"{str(kind).capitalize()} '{entry_name}' is not provided by any registered project"
-                if ep is not None:
-                    warning += " but is installed locally"
-                    if dist_name:
-                        warning += f" from '{dist_name}'"
-                    log.info(warning)
-                else:
-                    log.warning(warning)
+            warning = (
+                f"{str(kind).capitalize()} '{entry_name}' is not provided by any registered project"
+            )
+            if ep is not None:
+                warning += " but is installed locally"
+                if dist_name:
+                    warning += f" from '{dist_name}'"
+                log.info(warning)
+            else:
+                log.warning(warning)
 
     return sorted(packages_to_install)
