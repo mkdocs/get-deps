@@ -3,7 +3,7 @@
 **An extra command for [MkDocs][] that infers required PyPI packages from `plugins` in mkdocs.yml.**
 
 [![PyPI](https://img.shields.io/pypi/v/mkdocs-get-deps)](https://pypi.org/project/mkdocs-get-deps/)
-[![GitHub](https://img.shields.io/github/license/mkdocs/get-deps)](https://github.com/mkdocs/get-deps/blob/master/LICENSE.md)
+[![License](https://img.shields.io/github/license/mkdocs/get-deps)](https://github.com/mkdocs/get-deps/blob/master/LICENSE.md)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mkdocs/get-deps/ci.yml.svg)](https://github.com/mkdocs/get-deps/actions?query=event%3Apush+branch%3Amaster)
 
 <table>
