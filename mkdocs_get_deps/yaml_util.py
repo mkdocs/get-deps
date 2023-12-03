@@ -5,13 +5,13 @@ import os
 import os.path
 from typing import IO, Any
 
-import mergedeep  # type: ignore
+import mergedeep  # type: ignore[import-untyped]
 import yaml
 
 try:
     from yaml import CSafeLoader as SafeLoader
 except ImportError:
-    from yaml import SafeLoader  # type: ignore
+    from yaml import SafeLoader  # type: ignore[assignment]
 
 log = logging.getLogger(f"mkdocs.{__name__}")
 
@@ -21,8 +21,8 @@ class YamlLoader(SafeLoader):
 
 
 # Prevent errors from trying to access external modules which may not be installed yet.
-YamlLoader.add_constructor("!ENV", lambda loader, node: None)  # type: ignore
-YamlLoader.add_constructor("!relative", lambda loader, node: None)  # type: ignore
+YamlLoader.add_constructor("!ENV", lambda loader, node: None)
+YamlLoader.add_constructor("!relative", lambda loader, node: None)
 YamlLoader.add_multi_constructor(
     "tag:yaml.org,2002:python/name:", lambda loader, suffix, node: None
 )
